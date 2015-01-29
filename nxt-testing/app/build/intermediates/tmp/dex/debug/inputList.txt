@@ -1,0 +1,2 @@
+/Users/wk/Documents/Projects/pylon-android/nxt-testing/app/build/intermediates/classes/debug
+/Users/wk/Documents/Projects/pylon-android/nxt-testing/app/build/intermediates/pre-dexed/debug/pccomm-b3a65fec323aca95e6511e2904fdfc2e9450137d.jar
