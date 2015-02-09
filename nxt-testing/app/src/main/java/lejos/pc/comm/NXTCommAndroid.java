@@ -3,6 +3,7 @@ package lejos.pc.comm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.UUID;
@@ -28,6 +29,11 @@ public class NXTCommAndroid implements NXTComm {
 			this.connectQueue = connectQueue;
 			try {
 				tmp = device.createRfcommSocketToServiceRecord(SERIAL_PORT_SERVICE_CLASS_UUID);
+                // The following lines are purported to work according to:
+                // http://stackoverflow.com/questions/19047995/programmatically-pair-bluetooth-device-without-the-user-entering-pin
+                //Method m = device.getClass().getMethod("createRfcommSocketToServiceRecord", new Class[] {int.class});
+                //tmp = (BluetoothSocket) m.invoke(mmDevice, 1);
+
 			} catch (IOException e) {
 				Log.e(TAG, "create() failed", e);
 			}
