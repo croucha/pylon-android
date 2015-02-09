@@ -13,7 +13,12 @@ import android.widget.EditText;
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketConnectionHandler;
 import de.tavendo.autobahn.WebSocketException;
+
+import com.google.gson.Gson;
 import com.pylon.R;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     private static final String TAG = "Websocket Test";
@@ -76,7 +81,7 @@ public class MainActivity extends Activity {
      * @return void
      */
     private void connectWebSocket() {
-        final String wsUri = "ws://192.168.206.138:8080/pylon/echo";
+        final String wsUri = "ws://192.168.1.105:8080/pylon-ws/chat/java";
 
         try {
             webSocketConnection.connect(wsUri, new WebSocketConnectionHandler() {
@@ -84,7 +89,11 @@ public class MainActivity extends Activity {
                 @Override
                 public void onOpen() {
                     Log.d(TAG, "Status: Connected to " + wsUri);
-                    webSocketConnection.sendTextMessage("Pylon Android application connected");
+                    Map<String,String> message = new LinkedHashMap<String,String>();
+                    message.put("sender", "Doe");
+                    message.put("message", "Pylon Android application connected");
+                    message.put("received", "");
+                    webSocketConnection.sendTextMessage(new Gson().toJson(message));
                 }
 
                 @Override
@@ -110,7 +119,12 @@ public class MainActivity extends Activity {
      */
     public void sendMessage(View view) {
         EditText editText = (EditText)findViewById(R.id.message);
-        webSocketConnection.sendTextMessage(editText.getText().toString());
+        Map<String,String> message = new LinkedHashMap<String,String>();
+        message.put("sender", "Doe");
+        message.put("message", editText.getText().toString());
+        message.put("received", "");
+
+        webSocketConnection.sendTextMessage(new Gson().toJson(message));
         editText.setText("");
     }
 }
