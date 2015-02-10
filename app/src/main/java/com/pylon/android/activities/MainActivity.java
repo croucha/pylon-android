@@ -1,4 +1,4 @@
-package com.pylon.activities;
+package com.pylon.android.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
