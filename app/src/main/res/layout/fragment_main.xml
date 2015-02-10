@@ -12,14 +12,13 @@
     <ScrollView
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="1">
-
+        android:layout_weight="1"
+        android:fillViewport="false"
+        android:id="@+id/messages">
         <TextView
-            android:id="@+id/messages"
-            android:text="@string/hello_world"
+            android:id="@+id/chatMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
     </ScrollView>
 
     <LinearLayout
