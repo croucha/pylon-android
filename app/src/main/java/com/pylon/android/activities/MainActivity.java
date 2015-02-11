@@ -2,8 +2,9 @@ package com.pylon.android.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,55 +12,56 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
-import de.tavendo.autobahn.WebSocketConnection;
-import de.tavendo.autobahn.WebSocketConnectionHandler;
-import de.tavendo.autobahn.WebSocketException;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.pylon.R;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import com.pylon.android.utilities.Websocket;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.pylon.android.timers.RelativeTimer;
 
 public class MainActivity extends Activity {
-    private static final String TAG = "Websocket Test";
+    private static final String TAG = "Main Activity";
 
-    private final WebSocketConnection webSocketConnection = new WebSocketConnection();
-
-    private Timer timer = new Timer();
+    private Websocket websocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(this.getLocalClassName(), "On Create Called");
-
+        // For now prevent orientation
+        // @TODO, maybe look into using states and redisplaying the previous instance state
+        // when the view orientation changes.  It seems when the orientation changes
+        // It resets the view and calls onCreate again
+        // see http://developer.android.com/guide/topics/resources/runtime-changes.html
+        // http://android-developers.blogspot.com/2009/02/faster-screen-orientation-change.html
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // @TODO document
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        connectWebSocket();
-
+        // Set layout to display which is the manifest file
+        this.setContentView(R.layout.activity_main);
+        // @TODO document
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
+            this.getFragmentManager().beginTransaction()
+                .add(R.id.container, new PlaceholderFragment())
+                .commit();
         }
-        // Start timer to update elapsed time in text view
-        //this.startTimer();
+        // Define websocket and make web socket connect
+        this.websocket = new Websocket(this, "192.168.1.105:8080/pylon-ws/chat/java").connect();
+        // Start timer to update elapsed time in text views every 30 seconds
+        new Timer().schedule(new RelativeTimer(this), 0, 30000);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.setContentView(R.layout.activity_main);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        this.getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -83,105 +85,14 @@ public class MainActivity extends Activity {
         public PlaceholderFragment() {}
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+        public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+        {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
-    }
-
-    /**
-     * Define method that will make websocket connection.
-     *
-     * @return void
-     */
-    private void connectWebSocket() {
-        final String wsUri = "ws://192.168.1.105:8080/pylon-ws/chat/java";
-
-        try {
-            webSocketConnection.connect(wsUri, new WebSocketConnectionHandler() {
-
-                @Override
-                public void onOpen() {
-                    Log.d(TAG, "Status: Connected to " + wsUri);
-                    Map<String,String> message = new LinkedHashMap<String,String>();
-                    message.put("sender", "Doe");
-                    message.put("message", "Pylon Android application connected");
-                    message.put("received", "");
-                    webSocketConnection.sendTextMessage(new Gson().toJson(message));
-                }
-
-                @Override
-                public void onTextMessage(String payload) {
-                    // Define parser
-                    JsonParser jsonParser = new JsonParser();
-                    // Parse results
-                    JsonObject results = jsonParser.parse(payload).getAsJsonObject();
-                    // Define sender
-                    String sender = results.get("sender").getAsString();
-                    // Define message
-                    String message = results.get("message").getAsString();
-                    // Define received
-                    String received = results.get("received").getAsString();
-                    // Define date format
-                    // @TODO, fix format
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-                    // Define date
-                    Date date = new Date();
-                    // Attempt to parse
-                    try {
-                        date = formatter.parse(received);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    // Format time
-                    CharSequence relativeTime = DateUtils.getRelativeTimeSpanString(
-                        date.getTime(),
-                        System.currentTimeMillis(),
-                        DateUtils.SECOND_IN_MILLIS
-                    );
-                    // Define text view
-                    TextView textView = (TextView) findViewById(R.id.chatMessage);
-                    // Determine if text view is empty
-                    if(textView.getText() != "") {
-                        // Append line separator
-                        textView.append(System.getProperty("line.separator"));
-                    }
-                    // Append message to chat
-                    // @TODO look into list view and append list items with hidden tags
-                    // of the date to be parsed and updated for time elapsed
-                    textView.append(sender + ": " + message + " (" + relativeTime + ")");
-                }
-
-                @Override
-                public void onClose(int code, String reason) {
-                    Log.d(TAG, "Connection lost.");
-                }
-            });
-        } catch (WebSocketException e) {
-            Log.d(TAG, e.toString());
-        }
-    }
-
-    // @TODO, update to parse each list item in a list view and get the date as a hidden
-    // tag and update
-    private void startTimer() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                // Define text view
-                TextView textView = (TextView) findViewById(R.id.chatMessage);
-                // Determine if text view is empty
-                if(textView != null && textView.getText() != "") {
-                    Pattern pattern = Pattern.compile("\\((.*?)\\)", Pattern.DOTALL);
-                    Matcher match = pattern.matcher(textView.getText());
-                    List<String> matches = new ArrayList<String>();
-                    while(match.find()){
-                        matches.add(match.group());
-                    }
-                    Log.i(TAG, matches.toString());
-                }
-            }
-        }, 0, 1000);
     }
 
     /**
@@ -196,8 +107,7 @@ public class MainActivity extends Activity {
         message.put("sender", "Doe");
         message.put("message", editText.getText().toString());
         message.put("received", "");
-
-        webSocketConnection.sendTextMessage(new Gson().toJson(message));
+        this.websocket.sendTextMessage(new Gson().toJson(message));
         editText.setText("");
     }
 }
