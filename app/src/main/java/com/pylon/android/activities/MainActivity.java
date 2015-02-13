@@ -2,6 +2,8 @@ package com.pylon.android.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -25,30 +27,38 @@ public class MainActivity extends Activity {
 
     private Websocket websocket;
 
+    private Fragment placeholderFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(this.getLocalClassName(), "On Create Called");
-        // For now prevent orientation
-        // @TODO, maybe look into using states and redisplaying the previous instance state
-        // when the view orientation changes.  It seems when the orientation changes
-        // It resets the view and calls onCreate again
-        // see http://developer.android.com/guide/topics/resources/runtime-changes.html
-        // http://android-developers.blogspot.com/2009/02/faster-screen-orientation-change.html
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        // @TODO document
+        // Invoke this method with super since it's being overridden
         super.onCreate(savedInstanceState);
-        // Set layout to display which is the manifest file
+        // Set frame layout to display, which is the name of the actual layout xml document
         this.setContentView(R.layout.activity_main);
-        // @TODO document
-        if (savedInstanceState == null) {
-            this.getFragmentManager().beginTransaction()
-                .add(R.id.container, new PlaceholderFragment())
-                .commit();
-        }
+        // Instantiate fragments
+        this.instantiateFragments(savedInstanceState);
         // Define websocket and make web socket connect
         this.websocket = new Websocket(this, "192.168.1.105:8080/pylon-ws/chat/java").connect();
         // Start timer to update elapsed time in text views every 30 seconds
         new Timer().schedule(new RelativeTimer(this), 0, 30000);
+        // For now, prevent screen rotation
+        // See method onRestoreInstanceState
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        FragmentManager manager = getFragmentManager();
+        manager.putFragment(outState, PlaceholderFragment.TAG, this.placeholderFragment);
+    }
+
+    // @TODO: come up with way to restore textview chats for screen rotation.
+    // They need to be saved in method onSaveInstanceState.
+    // Saving the fragment isn't enough to save the textviews.
+    @Override
+    protected void onRestoreInstanceState(Bundle inState) {
+        instantiateFragments(inState);
     }
 
     @Override
@@ -78,9 +88,38 @@ public class MainActivity extends Activity {
     }
 
     /**
+     * Setup the fragment_main.xml over the frame layout
+     *
+     * @param inState
+     */
+    private void instantiateFragments(Bundle inState) {
+        FragmentManager manager = this.getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        // Restore previous fragment if state not null
+        if (inState != null) {
+            this.placeholderFragment = manager.getFragment(
+                inState,
+                PlaceholderFragment.TAG
+            );
+        }
+        // Create new fragment
+        else {
+            this.placeholderFragment = new PlaceholderFragment();
+            transaction.add(
+                R.id.container,
+                this.placeholderFragment,
+                PlaceholderFragment.TAG
+            );
+            transaction.commit();
+        }
+    }
+
+    /**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+
+        private static final String TAG = "PlaceholderFragment";
 
         public PlaceholderFragment() {}
 
