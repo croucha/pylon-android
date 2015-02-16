@@ -29,6 +29,10 @@
             android:name="lejos.android.RCNavigationControl"
             android:label="@string/rc_nav_control" >
         </activity>
+        <activity
+            android:name="lejos.android.PylonTesting"
+            android:label="PylonTesting" >
+        </activity>
     </application>
 
 </manifest>

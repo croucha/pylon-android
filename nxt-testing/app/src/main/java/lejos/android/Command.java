@@ -7,5 +7,5 @@ package lejos.android;
  */
 public enum Command
 {
-  GOTO,TRAVEL,ROTATE;  // 3 commands to be tansmittes to the NXT
+  GOTO,TRAVEL,ROTATE,FORWARD;  // 3 commands to be transmits to the NXT
 }
