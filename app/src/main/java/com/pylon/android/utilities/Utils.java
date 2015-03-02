@@ -21,7 +21,7 @@ public class Utils {
         // Define time zone
         TimeZone timeZone = TimeZone.getTimeZone("UTC");
         // Define Atom (ISO 8601) format
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         // Set time zone
         dateFormat.setTimeZone(timeZone);
         // Define date
