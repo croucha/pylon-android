@@ -124,6 +124,7 @@ public class LeJOSDroid extends Activity {
 		setupTachoCount(this);
 		setupBTSend(this);
 		setupRCNavigationControl(this);
+        setupPylonTesting(this);
 		reusableToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 	}
 
@@ -177,6 +178,18 @@ public class LeJOSDroid extends Activity {
 			}
 		});
 	}
+
+    private void setupPylonTesting(final LeJOSDroid leJOSDroid) {
+        Button button;
+        button = (Button) findViewById(R.id.button4);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View arg0) {
+                Intent PylonTesting = new Intent(leJOSDroid, lejos.android.PylonTesting.class);
+                startActivity(PylonTesting);
+            }
+        });
+    }
 
 	private void setupTachoCount(final LeJOSDroid mActivity) {
 		Button button = (Button) findViewById(R.id.button1);
