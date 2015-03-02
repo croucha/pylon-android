@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.pylon.R;
 import com.pylon.android.utilities.Utils;
 import java.util.TimerTask;
 
