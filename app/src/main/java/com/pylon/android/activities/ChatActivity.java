@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Timer;
 import com.pylon.android.timers.RelativeTimer;
 
-public class MainActivity extends Activity {
-    private static final String TAG = "Main Activity";
+public class ChatActivity extends Activity {
+    private static final String TAG = "Chat Activity";
 
     private Websocket websocket;
 
@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
         // Define websocket and make web socket connect
         this.websocket = new Websocket(this, "192.168.1.105:8080/pylon-ws/chat/java").connect();
         // Start timer to update elapsed time in text views every 30 seconds
-        new Timer().schedule(new RelativeTimer(this), 0, 30000);
+        new Timer().schedule(new RelativeTimer(this, R.id.chatMessageContainer), 0, 30000);
         // For now, prevent screen rotation
         // See method onRestoreInstanceState
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

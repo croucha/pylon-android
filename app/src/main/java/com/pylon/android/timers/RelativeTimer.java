@@ -15,9 +15,11 @@ import java.util.TimerTask;
 public class RelativeTimer extends TimerTask {
 
     private final Activity activity;
+    private final int viewId;
 
-    public RelativeTimer(Activity activity) {
+    public RelativeTimer(Activity activity, int viewId) {
         this.activity = activity;
+        this.viewId = viewId;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class RelativeTimer extends TimerTask {
             @Override
             public void run() {
             // Define linear layout of messages
-            LinearLayout layout = (LinearLayout) activity.findViewById(R.id.chatMessageContainer);
+            LinearLayout layout = (LinearLayout) activity.findViewById(viewId);
             // Check for null
             if (layout != null) {
                 // Loop through layout's children
