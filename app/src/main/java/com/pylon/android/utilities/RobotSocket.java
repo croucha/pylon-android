@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.pylon.android.utilities.Brainz;
 import com.pylon.R;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -66,6 +67,14 @@ public class RobotSocket {
                     String message = results.get("message").getAsString();
                     // Define received
                     String received = results.get("received").getAsString();
+
+                    // @TODO need to ensure the message returned to the phone's UI happens
+                    // after the Brains has been processed.
+                    // Set command
+                    Brainz.setCommand(message);
+                    // Process behavior
+                    Brainz.processBehavior();
+
                     // Convert to relative time
                     CharSequence relativeTime = Utils.convertIso8601ToRelativeTime(received);
                     // Set final linear layout (makes it available in runnable)
