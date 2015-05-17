@@ -26,7 +26,7 @@ public class RCNavComms
     private String TAG="RCNavComms";
   /**
    * constructor establishes  call back path of the RCNavigationControl
- * @param mUIMessageHandler 
+   * @param mUIMessageHandler
    * @param control
    */
   public RCNavComms(Handler mUIMessageHandler)

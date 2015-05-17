@@ -35,4 +35,8 @@
 <string name="goto_button">GoTo XY</string>
 <string name="rotate_button">Rotate</string>
 <string name="travel_button">Travel</string>
+<string name="nxt_left">LEFT</string>
+<string name="nxt_right">RIGHT</string>
+<string name="nxt_forward">FORWARD</string>
+<string name="nxt_reverse">REVERSE</string>
 </resources>

@@ -15,9 +15,13 @@
     <string name="name_label">Name</string>
     <string name="none_found">No devices found</string>
     <string name="none_paired">No devices have been paired</string>
+    <string name="nxt_forward">FORWARD</string>
+    <string name="nxt_left">LEFT</string>
+    <string name="nxt_reverse">REVERSE</string>
+    <string name="nxt_right">RIGHT</string>
     <string name="pairing_message">After pairing, press menu and connect.</string>
     <string name="pylon_tab">PYLON TESTING</string>
-    <string name="pylon_testing">Pressing the button below should drive the NXT forward a few feet</string>
+    <string name="pylon_testing">Press the Buttons!</string>
     <string name="rc_nav_control">RCNavigationControl</string>
     <string name="rotate_button">Rotate</string>
     <string name="scanning">scanning for devices...</string>
